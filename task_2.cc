@@ -187,23 +187,23 @@ main(int argc, char* argv[])
     // Install applications
 
     UdpEchoServerHelper echoServer(21);
-    ApplicationContainer serverApps = echoServer.Install(allNodes.Get(0)); // da controllare
+    ApplicationContainer serverApps = echoServer.Install(wifiStaNodes.Get(0)); // da controllare
     serverApps.Start(Seconds(0.0));
     serverApps.Stop(Seconds(10.0));
 
-    UdpEchoClientHelper echoClientN3(staInterfaces.GetAddress(2), 21);
+    UdpEchoClientHelper echoClientN3(staInterfaces.GetAddress(3), 21);
     echoClient.SetAttribute("MaxPackets", UintegerValue(2));
     echoClient.SetAttribute("Interval", TimeValue(Seconds(2.0)));
     echoClient.SetAttribute("PacketSize", UintegerValue(512));
-    ApplicationContainer clientAppsN3 = echoClientN3.Install(wifiStaNodes.Get(2)); // da controllare
+    ApplicationContainer clientAppsN3 = echoClientN3.Install(wifiStaNodes.Get(3)); // da controllare
     clientApps.Start(Seconds(2.0));
     clientApps.Stop(Seconds(4.5));
 
-    UdpEchoClientHelper echoClientN4(staInterfaces.GetAddress(3),21); // UDP Echo Client verso n0
+    UdpEchoClientHelper echoClientN4(staInterfaces.GetAddress(4),21); // UDP Echo Client verso n0
     echoClientN3.SetAttribute("MaxPackets", UintegerValue(2));
     echoClientN3.SetAttribute("Interval", TimeValue(Seconds(3.0)));
     echoClientN3.SetAttribute("PacketSize", UintegerValue(512));
-    ApplicationContainer clientAppsN4 = echoClientN4.Install(wifiStaNodes.Get(3)); // UDP Echo Client installato su n3
+    ApplicationContainer clientAppsN4 = echoClientN4.Install(wifiStaNodes.Get(4)); // UDP Echo Client installato su n3
     cltAppN4.Start(Seconds(1.0));
     cltAppN4.Stop(Seconds(4.5));
 
