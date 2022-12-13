@@ -42,7 +42,7 @@
 using namespace std;
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("HW2_Task_2_Team_54"); // AD-HOC MODE
+NS_LOG_COMPONENT_DEFINE("HW2_Task_2_Team_54"); // INFRASTRUCTURE MODE
 
 int
 main(int argc, char* argv[])
@@ -53,18 +53,10 @@ main(int argc, char* argv[])
     string ssid = "TLC2022";
 
     CommandLine cmd(__FILE__);
-    cmd.AddValue("useRtsCts",
-                 "Force the use of Rts and Cts",
-                 useRtsCts); // Scelta di useRtsCts da CMD
-    cmd.AddValue("verbose",
-                 "Enable the use of Logs on SRV and CLI",
-                 verbose); // Scelta di verbose da CMD
-    cmd.AddValue("useNetAnim",
-                 "Enable file generation for NetAnim",
-                 useNetAnim); // Scelta di useNetAnim da CMD
-    cmd.AddValue("ssid",
-                 "Choose the network name",
-                 ssid); // Scelta del SSID da CMD
+    cmd.AddValue("useRtsCts","Force the use of Rts and Cts",useRtsCts); // Scelta di useRtsCts da CMD
+    cmd.AddValue("verbose","Enable the use of Logs on SRV and CLI",verbose); // Scelta di verbose da CMD
+    cmd.AddValue("useNetAnim","Enable file generation for NetAnim",useNetAnim); // Scelta di useNetAnim da CMD
+    cmd.AddValue("ssid","Choose the network name",ssid); // Scelta del SSID da CMD
 
     cmd.Parse(argc, argv);
 
@@ -79,11 +71,11 @@ main(int argc, char* argv[])
 
     NS_LOG_INFO("Creazione dei nodi e dei relativi container"); // STATUS LOG INFO LEVEL
 
-    uint32_t nodesNum = 5;
+    uint32_t staNodesNum = 5;
 
     NodeContainer allNodes;
     NodeContainer wifiStaNodes;
-    wifiStaNodes.Create(nodesNum);
+    wifiStaNodes.Create(staNodesNum);
     allNodes.Add(wifiStaNodes);
     NodeContainer wifiApNode;
     wifiApNode.Create(1);
