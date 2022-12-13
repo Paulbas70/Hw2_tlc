@@ -217,17 +217,25 @@ main(int argc, char* argv[])
         AnimationInterface.anim("wireless-task2-rts-off.xml");
     }
 
-    for (uint32_t i = 0; i < wifiStaNodes.GetN(); ++i)
-    {
-        if()
-        anim.UpdateNodeDescription(wifiStaNodes.Get(i), "STA-i");
-        anim.UpdateNodeColor(wifiStaNodes.Get(i), 255, 0, 0);   
-    }
-    for (uint32_t i = 0; i < wifiApNode.GetN(); ++i)
-    {
-        anim.UpdateNodeDescription(wifiApNode.Get(i), "AP"); 
-        anim.UpdateNodeColor(wifiApNode.Get(i), 66, 49, 137); 
-    }
+    anim.UpdateNodeDescription(wifiStaNodes.Get(0), "SRV-0");
+    anim.UpdateNodeColor(wifiStaNodes.Get(0), 255, 0, 0);   
+
+    anim.UpdateNodeDescription(wifiStaNodes.Get(3),"CLI-3");
+    anim.UpdagteNodeColor(wifiStaNodes.Get(3), 0, 255, 0);
+
+    anim.UpdateNodeDescription(wifiStaNodes.Get(4),"CLI-4");
+    anim.UpdateNodeColor(wifiStaNodes.Get(4), 0, 255, 0); 
+
+
+    anim.UpdateNodeDescription(wifiStaNodes.Get(1),"STA-1");
+    anim.UpdagteNodeColor(wifiStaNodes.Get(1), 0, 0, 255);
+
+    anim.UpdateNodeDescription(wifiStaNodes.Get(2),"STA-2");
+    anim.UpdateNodeColor(wifiStaNodes.Get(2), 0, 0, 255);
+    
+    
+    anim.UpdateNodeDescription(wifiApNode.Get(0), "AP"); 
+    anim.UpdateNodeColor(wifiApNode.Get(i), 66, 49, 137); 
 
     anim.EnablePacketMetadata(); 
     anim.EnableWifiMacCounters(Seconds(0), Seconds(10)); 
@@ -238,20 +246,20 @@ main(int argc, char* argv[])
         LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);     //LOG abilitato per UDP CLIENT (n3, n4)
     }
 
-    // phyAdHocMod.EnablePcap("task1-off-n2.pcap", adHocModDevices.Get(2), true, true);           //Pcap su n2 [ task(1|2)-<state>-<id_del_nodo>.<formato_file_richiesto> ]
+        
 
     NS_LOG_INFO("END");        //STATUS LOG INFO LEVEL
 
     ///////////////////////////////////////////////////////////////////////////////
 
     if(useRtsCts) {  
-        phy.EnablePcap("task1-on-n4.pcap", staDevices.Get(3), true, true);
-        phy.EnablePcap("task1-on-ap.pcap", apDevices.Get(0), true, true);           //Pcap su n2 [ task(1|2)-<state>-<id_del_nodo>.<formato_file_richiesto> ]
+        phy.EnablePcap("task2-on-n4.pcap", staDevices.Get(4), true, true);
+        phy.EnablePcap("task2-on-ap.pcap", apDevices.Get(0), true, true);           
     }
 
     else {
-        phy.EnablePcap("task1-off-n4.pcap", staDevices.Get(3), true, true);  
-        phy.EnablePcap("task1-on-ap.pcap", apDevices.Get(0), true, true);         //Pcap su n2 [ task(1|2)-<state>-<id_del_nodo>.<formato_file_richiesto> ]
+        phy.EnablePcap("task2-off-n4.pcap", staDevices.Get(4), true, true);  
+        phy.EnablePcap("task2-off-ap.pcap", apDevices.Get(0), true, true);         
     }
 
 
