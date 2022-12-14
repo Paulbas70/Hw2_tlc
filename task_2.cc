@@ -89,15 +89,11 @@ main(int argc, char* argv[])
 
     WifiMacHelper macInfrastructureMod;
     Ssid  SSID= Ssid(ssid);
-    macInfrastructureMod.SetType("ns3::StaWifiMac",
-                                 "Ssid",
-                                 SsidValue(SSID),
-                                 "ActiveProbing",
-                                 BooleanValue(false));
+    macInfrastructureMod.SetType("ns3::StaWifiMac","Ssid",SsidValue(SSID),"ActiveProbing",BooleanValue(false));
 
     NetDeviceContainer staDevices;
     staDevices = wifi.Install(phy, macInfrastructureMod, wifiStaNodes);
-    macInfrastructureMod.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid));
+    macInfrastructureMod.SetType("ns3::ApWifiMac", "Ssid", SsidValue(SSID));
 
     NetDeviceContainer apDevices;
     apDevices = wifi.Install(phy, macInfrastructureMod, wifiApNode);
@@ -109,15 +105,15 @@ main(int argc, char* argv[])
     MobilityHelper mobility;
     mobility.SetPositionAllocator("ns3::GridPositionAllocator",
                                   "MinX",
-                                  DoubleValue(10.0),
+                                  DoubleValue(0.0),
                                   "MinY",
-                                  DoubleValue(10.0),
+                                  DoubleValue(0.0),
                                   "DeltaX",
                                   DoubleValue(5.0),
                                   "DeltaY",
                                   DoubleValue(2.0),
                                   "GridWidth",
-                                  UintegerValue(5),
+                                  UintegerValue(3),
                                   "LayoutType",
                                   StringValue("RowFirst"));
     mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
@@ -130,8 +126,15 @@ main(int argc, char* argv[])
     // AnimationInterface::SetConstantPosition(csmaNodes.Get(1), 10, 33);
 
     NS_LOG_INFO("Fine creazione del mobility model");
+    
+    /*
+    energySource->SetInitialEnergy(300);
+    energyModel->SetEnergySource(energySource);
+    energySource->AppendDeviceEnergyModel(energyModel);
 
- 
+    // aggregate energy source to node
+    wifiApNode.Get(0)->AggregateObject(energySource);
+    */
 
     // Install internet stack
 
@@ -149,12 +152,14 @@ main(int argc, char* argv[])
 
     // Install applications
 
+    NS_LOG_INFO("START");        //STATUS LOG INFO LEVEL
+
     UdpEchoServerHelper echoServer(21);
     ApplicationContainer serverApps = echoServer.Install(wifiStaNodes.Get(0)); // da controllare
     serverApps.Start(Seconds(0.0));
     serverApps.Stop(Seconds(10.0));
 
-    UdpEchoClientHelper echoClientN3(staInterfaces.GetAddress(3), 21);
+    UdpEchoClientHelper echoClientN3(staInterfaces.GetAddress(0), 21);
     echoClientN3.SetAttribute("MaxPackets", UintegerValue(2));
     echoClientN3.SetAttribute("Interval", TimeValue(Seconds(2.0)));
     echoClientN3.SetAttribute("PacketSize", UintegerValue(512));
@@ -162,7 +167,7 @@ main(int argc, char* argv[])
     clientAppsN3.Start(Seconds(2.0));
     clientAppsN3.Stop(Seconds(4.5));
 
-    UdpEchoClientHelper echoClientN4(staInterfaces.GetAddress(4),21); // UDP Echo Client verso n0
+    UdpEchoClientHelper echoClientN4(staInterfaces.GetAddress(0),21); // UDP Echo Client verso n0
     echoClientN4.SetAttribute("MaxPackets", UintegerValue(2));
     echoClientN4.SetAttribute("Interval", TimeValue(Seconds(3.0)));
     echoClientN4.SetAttribute("PacketSize", UintegerValue(512));
@@ -173,7 +178,26 @@ main(int argc, char* argv[])
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
     Simulator::Stop(Seconds(15.0));
 
-    if(useRtsCts) {
+    if(verbose){
+        LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);     //LOG abilitato per UDP SERVER (n0)
+        LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);     //LOG abilitato per UDP CLIENT (n3, n4)
+    }
+
+    NS_LOG_INFO("END");        //STATUS LOG INFO LEVEL
+
+    if(useRtsCts) {  
+        phy.EnablePcap("task2-on-n4.pcap", staDevices.Get(4), true, true);
+        phy.EnablePcap("task2-on-ap.pcap", apDevices.Get(0), true, true);           
+    }
+
+    else {
+        phy.EnablePcap("task2-off-n4.pcap", staDevices.Get(4), true, true);  
+        phy.EnablePcap("task2-off-ap.pcap", apDevices.Get(0), true, true);         
+    }
+
+
+    if(useNetAnim) {
+        if(useRtsCts) {
         AnimationInterface anim("wireless-task2-rts-on.xml"); 
         anim.UpdateNodeDescription(wifiStaNodes.Get(0), "SRV-0");
         anim.UpdateNodeColor(wifiStaNodes.Get(0), 255, 0, 0);   
@@ -229,27 +253,11 @@ main(int argc, char* argv[])
         anim.EnableWifiMacCounters(Seconds(0), Seconds(10)); 
         anim.EnableWifiPhyCounters(Seconds(0), Seconds(10));
     }
-
-    
-
-    if(verbose){
-        LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);     //LOG abilitato per UDP SERVER (n0)
-        LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);     //LOG abilitato per UDP CLIENT (n3, n4)
     }
-
-    NS_LOG_INFO("END");        //STATUS LOG INFO LEVEL
+   
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    if(useRtsCts) {  
-        phy.EnablePcap("task2-on-n4.pcap", staDevices.Get(4), true, true);
-        phy.EnablePcap("task2-on-ap.pcap", apDevices.Get(0), true, true);           
-    }
-
-    else {
-        phy.EnablePcap("task2-off-n4.pcap", staDevices.Get(4), true, true);  
-        phy.EnablePcap("task2-off-ap.pcap", apDevices.Get(0), true, true);         
-    }
 
 
     Simulator::Run();
